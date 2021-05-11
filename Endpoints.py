@@ -26,7 +26,7 @@ def get_api(json_data: Dict):
     g = GetAPIClass()
 
     if (g.validateInput(audioFileId,audioFileType) == False):
-        return "The request is invalid: 400 bad request"
+        return {"The request is invalid: 400 bad request"}
     else:
         #filtering based in audioFileId
         if audioFileId is not None:
@@ -34,7 +34,7 @@ def get_api(json_data: Dict):
         #filtering based on audioFileType
         else:
             g.filterbyType(audioFileType)
-        return "The request is invalid: 400 bad request"
+        return {"The request is invalid: 400 bad request"}
 
 @app.delete("/delete/")
 def delete_api(json_data: Dict):
@@ -48,7 +48,7 @@ def delete_api(json_data: Dict):
     d= DeleteAPIClass()
     #checking if id is null
     if d.validateInput(audioFileID) == False:
-        return "The request is invalid: 400 bad request"
+        return {"The request is invalid: 400 bad request"}
     else:
         #filtering based on the input. The output is the cursor
         audio_obj = collection.find(filter={"_id":audioFileID})
@@ -56,14 +56,14 @@ def delete_api(json_data: Dict):
         audio_list =list(audio_obj)
         #checking if any entry based on input is found or not
         if (d.checkList(audio_list) == False):
-            return "The request is invalid: 400 bad request"
+            return {"The request is invalid: 400 bad request"}
             #deleting based on the user input
         else:
             try:
                 d.delete(audioFileID)
-                return "200 ok"
+                return {"status":"200 ok"}
             except:
-                return "500: Internal Error"
+                return {"status":"500 Internal Error"}
             
 
 @app.post("/create/")
@@ -82,7 +82,7 @@ def create_api(json_data: Dict):
 
     #checking if audioType is not passed by the user
     if audioType is None:
-        return "The request is invalid: 400 bad request"
+        return {"The request is invalid: 400 bad request"}
    
     #checking if the type is song and checking the input passed by the user
     if (audioType =="song"):
@@ -91,7 +91,7 @@ def create_api(json_data: Dict):
         audioUploadedTime = datetime.datetime.utcnow()
         audioName = json_data.get('audioName')
         if (c.checkAudioName(audioName) ==False) or (c.checkAudioDuration(audioDuration)==False) or (c.checkUploadedTime(audioUploadedTime)== False):
-            return "The request is invalid: 400 bad request"
+            return {"The request is invalid: 400 bad request"}
         else:
             #inserting the values in document
             post = { "_id": audioId,
@@ -102,9 +102,9 @@ def create_api(json_data: Dict):
                      }
             try:
                c.insert(post)
-               return  "200 ok"
+               return  {"status":"200 ok"}
             except:
-                return "500 : Internal Error"
+                return {"status":"500 Internal Error"}
        
     #checking if the type is podcast and checking the inputs passed by the user
     if (audioType == "podcast"):
@@ -115,7 +115,7 @@ def create_api(json_data: Dict):
         audioName = json_data.get('audioName')
         participant= json_data.get('participants')
         if (c.checkParticipants(participant)==False) or (checkAudioDuration(audioDuration)==False) or (checkUploadedTime(audioUploadedTime)== False):
-            return "The request is invalid: 400 bad request"
+            return {"The request is invalid": "400 bad request"}
         else:
             #inserting the values in document
             post = {"_id":audioId,
@@ -128,9 +128,9 @@ def create_api(json_data: Dict):
                      }
             try:
                 c.insert(post)
-                return "200 ok"
+                return {"status":"200 ok"}
             except:
-                return "500 : Internal Error"
+                return {"status":"500 Internal Error"}
 
         #checking if the type id audiobook and checking the inputs passed by the user
         if (audioType =="audiobook"):
@@ -142,7 +142,7 @@ def create_api(json_data: Dict):
             narrator = json_data.get("audioNarrator",None)
             
             if (c.checkLengths(audioTitle,author,narrator)== False) or (c.checkAudioDuration(audioDuration)== False) or (c.checkUploadedTime(audioUploadedTime)== False):
-               return "The request is invalid: 400 bad request"
+               return {"The request is invalid":" 400 bad request"}
             else:
                #inserting the values in document
                 post = {"_id":audioId,
@@ -155,9 +155,9 @@ def create_api(json_data: Dict):
                      }
                 try:
                     c.insert(post)
-                    return "200 ok"
+                    return {"status":"200 ok"}
                 except:
-                    return "500 : Internal Error"
+                    return {"status":"500 Internal Error"}
 
 @app.put("/update/")
 def update_api(json_data: Dict):
@@ -174,7 +174,7 @@ def update_api(json_data: Dict):
     u = UpdateAPIClass()
 
     if u.validateInput(audioId,audioType) == False:
-        return "The request is invalid: 400 bad request"
+        return {"The request is invalid": "400 bad request"}
     else :
         #saving other details in local variables
         audioId = json_data.get('audioId')
@@ -183,7 +183,7 @@ def update_api(json_data: Dict):
         audioName = json_data.get('audioName')
         #validating the input
         if (u.checkAudioName(audioName)== False) or (u.checkUploadedTime(audioUploadedTime)== False) or (u.checkAudioDuration(audioDuration)== False):
-            return "The request is invalid: 400 bad request"
+            return {"The request is invalid": "400 bad request"}
         else:
             #performing update query
             u.update()
